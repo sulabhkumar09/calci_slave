@@ -1,0 +1,76 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    container_name: prometheus
+    links:
+        - pushgateway
+    depends_on:
+        - cadvisor
+        - alertmanager
+    restart: always
+    command:
+    - --config.file=/prometheus.yml
+    volumes:
+      - './prometheus.yml:/prometheus.yml'
+
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./config:/prometheus
+      - ./data/alertmanager:/data
+    command:
+    - --config.file=/alert_rules.yml
+    - --storage.path=/data
+    ports:
+      - 9093:9093
+
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    ports:
+      - 9091:9091
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+  cadvisor:
+    image: google/cadvisor:v0.24.1
+    container_name: cadvisor
+    expose:
+      - 8080
+    ports:
+      - 8005:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  jmx-exporter:
+    image: sscaling/jmx-prometheus-exporter
+    ports:
+      - 5556:5556
+      
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    container_name: grafana
+    restart: always
+    depends_on:
+      - prometheus
+      - cadvisor
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - '$HOME/grafana/config/grafana.ini:/grafana.ini'
+      - ./datasource.yml:/datasource.yml
+   

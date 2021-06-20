@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins-jobs>
+	<jenkins-job>
+		<template>BASIC-JAVA-PIPELINE</template>
+			<build>
+				<property>
+					<name>command</name>
+					<value>install</value>
+				</property>
+				<property>
+					<name>labelExpr</name>
+					<value>Linux_Slave</value>// previous one
+					<!--<value>jenkins_linux_slave</value> -->// locally setup slave
+				</property>
+				<property>
+					<name>buildType</name>
+					<value>pipeline</value>  
+				</property>
+			</build>
+			
+		<performance-run>
+			<property>
+				<name>p-pom</name>
+				<value>DemoSampleApp_Jmeter</value>
+			</property>
+			<property>
+				<name>p-port</name>
+				<value>8090</value>
+			</property>
+			<property>
+				<name>p-context</name>
+				<value>devopssampleapplication</value>
+			</property>
+		</performance-run>
+		<selenium-run>
+			<property>
+				<name>s-pom</name>
+				<value>DemoSampleApp_selenium</value>
+			</property>
+			<property>
+				<name>s-port</name>
+				<value>8090</value>
+			</property>
+			<property>
+				<name>s-context</name>
+				<value>devopssampleapplication</value>
+			</property>
+		</selenium-run>
+		
+		
+		<!-- Docker Plugin-->
+		<docker-run>
+			<property>
+				<name>image</name>
+				<value>tomcat:latest</value>
+			</property>
+			<property>
+				<name>volumesString</name>
+				<!--<value> devopssampleapplication.war </value>--> // previous one
+				<value>calculator.war</value> // for local setup and changes acc. to the code
+			</property>
+			<property>
+				<name>bindPorts</name>
+				<value>8090:8080</value>
+			</property>
+		</docker-run>
+		
+		<!--Added Docker push plugin -->
+		<dockerPush>
+			<property>
+				<name>dockerimage</name>
+				<value>docker_image:latest</value>
+			</property>
+		</dockerPush>
+		
+		<!--Added Docker complaince plugin -->
+		<docker-compliance>
+			<property>
+				<name>dockercomplianceimages</name>
+				<value>tomcat:latest</value>
+			</property>
+		</docker-compliance>
+		
+		<setup-monitoring>
+			<property>
+				<name>dockercompose</name>
+				<value>docker-compose</value>
+			</property>
+			<property>
+				<name>dockercomposefile</name>
+				<value>docker-compose.yml</value>
+			</property>
+		</setup-monitoring>
+        </jenkins-job>
+</jenkins-jobs>

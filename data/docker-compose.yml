@@ -1,0 +1,36 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '${App_Port}:9090'
+    container_name: prometheus
+    links:
+        - pushgateway
+    depends_on:
+        - cadvisor
+        - alertmanager
+    restart: always
+    command:
+    - --config.file=/prometheus.yml
+    volumes:
+      - './prometheus.yml:/prometheus.yml'
+
+ 
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    container_name: grafana
+    restart: always
+    depends_on:
+      - prometheus
+      - cadvisor
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - '$HOME/grafana/config/grafana.ini:/grafana.ini'
+      - ./datasource.yml:/datasource.yml
+   

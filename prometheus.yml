@@ -1,0 +1,22 @@
+- job_name: 'cAdvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['10.127.128.187:5601']
+
+
+  - job_name: 'node_exporter'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['10.127.128.187:9100']
+
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['10.127.128.187:9091']
+
+  - job_name: "JVM"
+    metrics_path: '/actuator/prometheus'
+    scrap_interval: 5s
+    static_configs:
+      - targets: ['10.127.128.187:8090']
+
